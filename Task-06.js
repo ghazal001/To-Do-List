@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Define an array to store the tasks
+    
     let itemsList = JSON.parse(localStorage.getItem('itemList')) || [];
 
     function addTask(event) {
@@ -195,11 +195,20 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsList.forEach((item, index) => {
                 const taskTitle = item.text.toLowerCase();
                 const taskItem = document.querySelector(`.task-item:nth-child(${index + 1}) .task-title`);
-                if (taskTitle.includes(searchTerm)) {
-                    taskItem.style.color = 'yellow';
-                    found = true;
-                } else {
-                    taskItem.style.color = 'black';
+                taskItem.innerHTML = ''; // Clear existing content
+    
+                for (let i = 0; i < taskTitle.length; i++) {
+                    const letter = taskTitle[i];
+                    const span = document.createElement('span');
+                    span.textContent = letter;
+    
+                    if (searchTerm.includes(letter)) {
+                        span.style.color = 'yellow';
+                        found = true;
+                    } else {
+                        span.style.color = 'black';
+                    }
+                    taskItem.appendChild(span);
                 }
             });
             if (!found) {
