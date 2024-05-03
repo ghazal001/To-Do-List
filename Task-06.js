@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function editTask(index) {
-        //Retrieve tasks from local storage
-        let itemsList = JSON.parse(localStorage.getItem("itemList")) || [];
         //Get the task item to be edited
         const taskItem = document.getElementById('taskItem-${index}');
         const titleContainer = taskItem.querySelector(".task-title");
@@ -55,28 +53,33 @@ document.addEventListener('DOMContentLoaded', function () {
         //focus on the input field 
         editInput.focus();
 
-        //save the edited task when the user presses enter or clicks outised the input field
-        editInput.addEventListener('blur', function () {
-            saveEditedTask(index, editInput.value);
-        });
+        // Save the edited task when the user presses enter
         editInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
-                saveEditedTask(index, editInput.value);
+                const newText = editInput.value.trim();
+                saveEditedTask(index, newText, editInput);
             }
         });
 
-
     }
 
-    function saveEditedTask(index, newText) {
-        // Retrieve tasks from local storage
-        let itemsList = JSON.parse(localStorage.getItem('itemList')) || [];
+    function saveEditedTask(index, newText, editInput) {
         // Check if the new task text already exists in the itemsList array
         const existingTask = itemsList.find((item, i) => i !== index && item.text.toLowerCase() === newText.toLowerCase());
         if (existingTask) {
-            alert('Task title already exists.');
+            const errorMessage = document.createElement('div');
+            errorMessage.textContent = 'Task title already exists. Please enter a different title.';
+            errorMessage.style.color = 'red';
+            editInput.parentNode.appendChild(errorMessage);
             return;
         }
+
+        // Remove any previous error message
+        const errorMessage = editInput.parentNode.querySelector('.error-message');
+        if (errorMessage) {
+            errorMessage.remove();
+        }
+
         // Update the task text in the itemsList array
         itemsList[index].text = newText;
 
@@ -90,8 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function deleteTask(index) {
-        //retrieve tasks from localstorage
-        let itemsList = JSON.parse(localStorage.getItem('itemList')) || [];
 
         //remove the task at the specified index
         itemsList.splice(index, 1);
@@ -112,8 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.deleteTasks = deleteTasks;
 
     function toggleDone(index) {
-        //Retrieve tasks from local storage
-        let itemsList = JSON.parse(localStorage.getItem('itemList'));
 
         //toggle the done property of the task
         itemsList[index].done = !itemsList[index].done;
@@ -187,25 +186,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function searchTask() {
-        if (event.key === 'Enter') {
-            const searchInput = document.getElementById('searchTask');
-            const searchTerm = searchInput.value.trim();
+        const searchInput = document.getElementById('searchTask');
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        let found = false;
 
-            // Check if the search term is not empty
-            if (searchTerm !== '') {
-                const taskTitles = itemsList.map(item => item.text.toLowerCase());
-                const index = taskTitles.indexOf(searchTerm.toLowerCase());
-
-                if (index !== -1) {
-                    // Task found, change its color to yellow
-                    const taskItem = document.querySelector(`.task-item:nth-child(${index + 1}) .task-title`);
+        if (searchTerm !== '') {
+            // Iterate over each task title
+            itemsList.forEach((item, index) => {
+                const taskTitle = item.text.toLowerCase();
+                const taskItem = document.querySelector(`.task-item:nth-child(${index + 1}) .task-title`);
+                if (taskTitle.includes(searchTerm)) {
                     taskItem.style.color = 'yellow';
+                    found = true;
                 } else {
-                    // Task not found, display a message
-                    alert('Task not found.');
+                    taskItem.style.color = 'black';
                 }
+            });
+            if (!found) {
+                alert('Task not found.');
             }
         }
+
     }
     // Add event listener to the form for adding tasks
     const addTaskBtn = document.getElementById('addTaskBtn');
@@ -221,9 +222,10 @@ document.addEventListener('DOMContentLoaded', function () {
     //add event listener to delete all tasks button 
     const deleteTasksBtn = document.getElementById('deleteTasksBtn');
     deleteTasksBtn.addEventListener('click', deleteTasks);
+
     // Add event listener to the search button
     const searchInput = document.getElementById('searchTask');
-    searchInput.addEventListener('keypress', searchTask);
+    searchInput.addEventListener('input', searchTask);
 
     //Display the tasks when the page is loaded
     displayTasks();
