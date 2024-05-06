@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    
+
     let itemsList = JSON.parse(localStorage.getItem('itemList')) || [];
 
     function addTask(event) {
@@ -184,40 +184,89 @@ document.addEventListener('DOMContentLoaded', function () {
         const filterDropdown = document.getElementById('filterDropdown');
         filterDropdown.value = filter;
     }
+    // function searchTask() {
+    //     const searchInput = document.getElementById('searchTask');
+    //     const searchTerm = searchInput.value.trim().toLowerCase();
+    //     let found = false;
+
+    //     if (searchTerm !== '') {
+    //         const regex = new RegExp(searchTerm, 'i');
+
+    //         // Iterate over each task title
+    //         itemsList.forEach((item, index) => {
+    //             const taskTitle = item.text;
+    //             const taskItem = document.querySelector(`.task-item:nth-child(${index + 1}) .task-title`);
+    //             const highlightedTitle = taskTitle.replace(regex, '<span style="color: yellow;">$&</span>');
+
+    //             if (highlightedTitle !== taskTitle) {
+    //                 taskItem.innerHTML = highlightedTitle;
+    //             } else {
+    //                 taskItem.innerHTML = taskTitle;
+    //             }
+
+    //             if (regex.test(taskTitle.toLowerCase())) {
+    //                 found = true;
+    //             }
+    //         });
+
+    //         if (!found) {
+    //             alert('Task not found.');
+    //         }
+    //     } else {
+    //         // Clear all task titles if search input is empty
+    //         itemsList.forEach((item, index) => {
+    //             const taskItem = document.querySelector(`.task-item:nth-child(${index + 1}) .task-title`);
+    //             taskItem.textContent = item.text;
+    //         });
+    //     }
+    // }
+    // Add event listener to the form for adding tasks
+    
 
     function searchTask() {
         const searchInput = document.getElementById('searchTask');
         const searchTerm = searchInput.value.trim().toLowerCase();
         let found = false;
-
+    
         if (searchTerm !== '') {
+            const regex = new RegExp(searchTerm, 'i');
+    
             // Iterate over each task title
             itemsList.forEach((item, index) => {
-                const taskTitle = item.text.toLowerCase();
-                const taskItem = document.querySelector(`.task-item:nth-child(${index + 1}) .task-title`);
-                taskItem.innerHTML = ''; // Clear existing content
+                const taskTitle = item.text;
+                const taskItem = document.querySelector(`.task-item:nth-child(${index + 1})`);
+                const taskTitleElement = taskItem.querySelector('.task-title');
     
-                for (let i = 0; i < taskTitle.length; i++) {
-                    const letter = taskTitle[i];
-                    const span = document.createElement('span');
-                    span.textContent = letter;
+                // Highlight the matched letters
+                const highlightedTitle = taskTitle.replace(regex, '<span style="color: yellow;">$&</span>');
     
-                    if (searchTerm.includes(letter)) {
-                        span.style.color = 'yellow';
-                        found = true;
-                    } else {
-                        span.style.color = 'black';
-                    }
-                    taskItem.appendChild(span);
+                // Update the task title
+                taskTitleElement.innerHTML = highlightedTitle;
+    
+                // Hide or show the task item based on whether it matches the search term
+                const match = regex.test(taskTitle.toLowerCase());
+                if (match) {
+                    taskItem.style.display = 'block'; // Show the task item
+                    found = true;
+                } else {
+                    taskItem.style.display = 'none'; // Hide the task item
                 }
             });
+    
+            // Show alert if no matches found
             if (!found) {
                 alert('Task not found.');
             }
+        } else {
+            // If search term is empty, show all task items
+            itemsList.forEach((item, index) => {
+                const taskItem = document.querySelector(`.task-item:nth-child(${index + 1})`);
+                taskItem.style.display = 'block'; // Show the task item
+                const taskTitleElement = taskItem.querySelector('.task-title');
+                taskTitleElement.textContent = item.text; // Reset task title to its original text
+            });
         }
-
     }
-    // Add event listener to the form for adding tasks
     const addTaskBtn = document.getElementById('addTaskBtn');
     addTaskBtn.addEventListener('click', addTask);
 

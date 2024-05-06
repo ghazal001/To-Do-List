@@ -30,7 +30,9 @@ button {
     cursor: pointer;
     width: 25%;
 }
-
+#addTaskBtn{
+    margin-left: 2%;
+}
 button:hover {
     background-color: #ddd;
 }
@@ -73,9 +75,10 @@ button.delete:hover {
 }
 
 .task-title{
-    margin-left: 30%;
+    margin-left: 35%;
     width: 25%;
     text-align: center;
+    font-size: 25px;
 }
 .task-item{
     margin-top: 30px;
@@ -86,6 +89,28 @@ button.delete:hover {
     color: white;
 }
 
-.deleteTasks{
-    padding-top: 15px;
+#deleteBtn{
+    display: flex;
+}
+#deleteTasksBtn{
+    background-color: red;
+    margin-left: 35%;
+    
+    
+}
+#taskList{
+    /* background-color: #bbb0b0; */
+    align-items: center;
+}
+.task-item{
+    background-color: #ccc;
+    width: 100%;
+}
+.task-buttons{
+    /* background-color: #cc0000; */
+    height: 50px;
+}
+button{
+    /* background-color: aqua; */
+    margin-left: 6%;
 }
